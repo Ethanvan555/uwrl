@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- CSP Simulation: Test nonce detection and report-only mode -->
+  <meta http-equiv="Content-Security-Policy" 
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'">
+  
+  <title>UWRL Mock Server Test Harness</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🎮 UWRL Mock Game Server</h1>
+    
+    <div class="info-box">
+      <p><strong>Purpose:</strong> Same-origin test environment for UWRL resilience features</p>
+      <p><strong>Server:</strong> <span id="server-status">Loading...</span></p>
+      <p><strong>Base URL:</strong> http://localhost:8000</p>
+    </div>
+    
+    <div class="test-container" id="test-results"></div>
+    
+    <!-- Main Test Runner Script -->
+    <script src="/scripts/mock-server.js"></script>
+  </div>
+  
+  <!-- Service Worker Registration (optional) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw/sw.mjs')
+        .then(reg => console.log('SW registered:', reg))
+        .catch(err => console.log('SW registration failed:', err));
+    }
+  </script>
+</body>
+</html>

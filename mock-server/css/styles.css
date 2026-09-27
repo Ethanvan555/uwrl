@@ -1,0 +1,157 @@
+/* UWRL Mock Server - Test Harness Styling */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  margin: 0;
+  padding: 20px;
+  color: #333;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  padding: 30px;
+}
+
+h1 {
+  color: #667eea;
+  margin-bottom: 20px;
+  font-size: 2rem;
+}
+
+.info-box {
+  background: #f8f9fa;
+  border-left: 4px solid #667eea;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+}
+
+.info-box p {
+  margin: 8px 0;
+  font-size: 0.95rem;
+}
+
+.info-box strong {
+  color: #667eea;
+}
+
+.test-container {
+  display: grid;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.test-result {
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #ccc;
+  background: #f8f9fa;
+  transition: all 0.3s ease;
+}
+
+.test-result.pass {
+  border-left-color: #28a745;
+  background: #d4edda;
+}
+
+.test-result.fail {
+  border-left-color: #dc3545;
+  background: #f8d7da;
+}
+
+.test-result.pending {
+  border-left-color: #ffc107;
+  background: #fff3cd;
+}
+
+.test-result h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+}
+
+.test-result .status {
+  font-weight: bold;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.test-result.pass .status {
+  color: #155724;
+}
+
+.test-result.fail .status {
+  color: #721c24;
+}
+
+.test-result.pending .status {
+  color: #856404;
+}
+
+.test-result .details {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 5px;
+}
+
+.console-output {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  padding: 15px;
+  border-radius: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  margin-top: 20px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.console-output .log-entry {
+  margin: 5px 0;
+  padding-left: 10px;
+  border-left: 2px solid #444;
+}
+
+.console-output .log-entry.error {
+  color: #f1c40f;
+  border-left-color: #e74c3c;
+}
+
+.console-output .log-entry.warn {
+  color: #f39c12;
+  border-left-color: #ffc107;
+}
+
+.console-output .log-entry.info {
+  color: #3498db;
+  border-left-color: #667eea;
+}
+
+.status-indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.status-indicator.pass {
+  background: #28a745;
+}
+
+.status-indicator.fail {
+  background: #dc3545;
+}
+
+.status-indicator.pending {
+  background: #ffc107;
+}

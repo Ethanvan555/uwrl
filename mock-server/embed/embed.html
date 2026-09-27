@@ -1,0 +1,48 @@
+/**
+ * Embed Content for Iframe Testing
+ * 
+ * Purpose: Simulate sandbox-allowed iframe content for testing UWRL's
+ *          iframesandbox detection and constraint handling
+ */
+
+// Sandbox-friendly configuration
+const SANDBOX_CONFIG = {
+  allowed: ['allow-scripts', 'allow-same-origin'],
+  restricted: ['allow-forms', 'allow-popups', 'allow-top-navigation'],
+  crossOrigin: 'anonymous' // For cross-origin isolation testing
+};
+
+console.log('[Embed] Sandbox config loaded:', JSON.stringify(SANDBOX_CONFIG, null, 2));
+
+// Create a simple embedded canvas
+const canvas = document.createElement('canvas');
+canvas.width = 200;
+canvas.height = 150;
+document.body.appendChild(canvas);
+
+const ctx = canvas.getContext('2d');
+ctx.fillStyle = '#e8f4fd';
+ctx.fillRect(0, 0, 200, 150);
+ctx.fillStyle = '#667eea';
+ctx.font = '14px sans-serif';
+ctx.textAlign = 'center';
+ctx.fillText('UWRL Iframe Test', 100, 75);
+
+// Simulate embedded game assets
+export const embedAssets = {
+  textures: ['/public/image.png'],
+  scripts: [],
+  styles: ['/css/styles.css']
+};
+
+console.log('[Embed] Assets loaded:', JSON.stringify(embedAssets, null, 2));
+
+// Expose for testing
+window.UWRL_EMBED_TEST = {
+  canvas,
+  ctx,
+  config: SANDBOX_CONFIG,
+  assets: embedAssets
+};
+
+export default embedAssets;

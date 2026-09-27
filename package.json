@@ -2,15 +2,31 @@
   "name": "uwrl",
   "version": "1.0.0",
   "description": "Universal Web Resilience Layer — a production-quality TypeScript library for browser application reliability through progressive enhancement and developer-controlled resilience mechanisms.",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build": "tsc -p tsconfig.build.json",
+    "clean": "node -e \"const fs = require('fs'); const path = require('path'); const dist = path.join(__dirname, 'dist'); if (fs.existsSync(dist)) { fs.rmSync(dist, { recursive: true }); }\"",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Ethanvan555/uwrl.git"
   },
-  "keywords": [],
+  "keywords": [
+    "resilience",
+    "fallback",
+    "cors",
+    "csp",
+    "browser",
+    "game",
+    "school-filter",
+    "go-guardian",
+    "lightspeed"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",

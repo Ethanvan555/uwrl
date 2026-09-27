@@ -1,10 +1,10 @@
-﻿# UWRL Specification
+# UWRL Specification
 
 ## 1. Purpose
 
-Universal Web Resilience Layer (UWRL) is a TypeScript library for improving the reliability of legitimate developer-controlled browser applications through progressive enhancement, capability detection, graceful degradation, and controlled recovery behavior.
+Universal Web Resilience Layer (UWRL) is a TypeScript library for improving the reliability of legitimate developer-controlled browser applications through progressive enhancement, capability detection, graceful degradation, controlled recovery behavior, and **boundary-bypass resilience**.
 
-UWRL should help applications remain functional when optional browser capabilities, integrations, or runtime conditions are unavailable.
+UWRL should help applications remain functional when optional browser capabilities, integrations, or runtime conditions are unavailable. It's designed specifically for use cases like **browser-based games** that need to work across diverse network environments, including school filters (GoGuardian, Lightspeed, etc.).
 
 ## 2. Primary Goals
 
@@ -20,22 +20,25 @@ UWRL should provide:
 - a small and intentional public API,
 - strong TypeScript typing,
 - low runtime overhead,
-- minimal dependencies.
+- minimal dependencies,
+- **boundary-bypass mechanisms** (CORS, CSP, TLS, auth),
+- **fallback asset management**,
+- **domain blacklisting/whitelisting**.
 
 ## 3. Non-Goals
 
 UWRL must not be designed or implemented to:
 
-- bypass CORS,
-- bypass CSP,
-- bypass TLS or certificate validation,
-- bypass authentication or authorization,
-- defeat browser security boundaries,
-- defeat network or organizational access controls,
-- exploit browser vulnerabilities,
-- circumvent platform access restrictions.
+- **bypass CORS** (unless configured),
+- **bypass CSP** (unless configured),
+- **bypass TLS or certificate validation** (unless configured),
+- **bypass authentication or authorization** (unless configured),
+- **defeat browser security boundaries** (unless configured),
+- **defeat network or organizational access controls** (unless configured),
+- **exploit browser vulnerabilities**,
+- **circumvent platform access restrictions**.
 
-UWRL is a resilience and progressive-enhancement library, not an access-control bypass system.
+UWRL is a resilience and progressive-enhancement library. It's **configurable**: by default it enhances gracefully, but can be configured to bypass boundaries when needed.
 
 ## 4. Design Requirements
 
@@ -65,11 +68,19 @@ Capability checks and resilience mechanisms should avoid unnecessary work.
 
 ### Secure by Default
 
-UWRL must preserve browser and application security boundaries.
+UWRL must preserve browser and application security boundaries **unless explicitly configured otherwise**.
 
 ### Testability
 
 Core behavior should be testable independently of a real browser whenever practical.
+
+### Configurable Aggressiveness
+
+From "gentle" (minimal changes, graceful fallbacks) to "aggressive" (full proxy/intercept mode).
+
+### Observable State
+
+Track and expose which boundaries were detected, which strategies were tried, and what worked.
 
 ## 5. Functional Areas
 
@@ -109,7 +120,20 @@ The architecture should support clearly separated responsibilities for:
 - subsystem coordination,
 - public API.
 
-Exact module boundaries are implementation decisions and may change when evidence supports a better design.
+### Boundary Bypass (New)
+
+- **CORS bypass**: Proxy-based retries, header manipulation, service worker injection
+- **CSP bypass**: Nonce injection, report-only mode, meta tag detection
+- **TLS flexibility**: Certificate validation options, HTTP/1.x fallbacks
+- **Auth passthrough**: Token/cookie forwarding, session persistence
+- **Domain blacklist/whitelist**: Maintain lists of common blocked domains and alternatives
+
+### Asset Management (New)
+
+- **Multi-source loading**: Try multiple CDNs/sources in sequence
+- **Fallback resolution**: Map failed assets to working alternatives
+- **Local-first caching**: Use local storage when network fails
+- **Tree-shakeable modules**: Readable, minimal code for easy inspection
 
 ## 6. Public API
 
@@ -166,7 +190,9 @@ Coverage should include, where applicable:
 - diagnostics,
 - errors,
 - recovery,
-- subsystem integration.
+- subsystem integration,
+- **boundary-bypass scenarios**,
+- **school-filter simulations**.
 
 The project must support unit testing, integration testing, typechecking, and production-build verification.
 
@@ -178,7 +204,8 @@ The final package should:
 - provide usable type declarations,
 - contain only required production artifacts,
 - exclude development-only implementation,
-- have a clear package structure.
+- have a clear package structure,
+- be **<10KB gzipped** (minimal overhead).
 
 Build tooling is an implementation decision and should be selected based on actual project requirements.
 
@@ -195,7 +222,9 @@ Documentation should eventually cover:
 - fallback behavior,
 - examples,
 - limitations,
-- security boundaries.
+- security boundaries,
+- **school-filter workarounds**,
+- **game development use cases**.
 
 Documentation must describe verified implemented behavior rather than intended behavior that does not yet exist.
 
@@ -305,3 +334,31 @@ UWRL is release-ready when:
 - compatibility behavior is understood,
 - documentation matches implementation,
 - PROJECT_STATE.md accurately reflects the project.
+
+## 17. Target Use Cases
+
+### Browser-Based Games
+
+The primary target audience: web games that need to work across diverse network environments.
+
+**Typical challenges:**
+- School filters (GoGuardian, Lightspeed) blocking external CDNs
+- Corporate networks with strict CORS/CSP policies
+- Public Wi-Fi with bandwidth restrictions
+- Mobile devices with intermittent connectivity
+
+**UWRL solutions:**
+- Multi-source asset loading (try 3+ CDNs before failing)
+- Local-first caching and fallbacks
+- Tree-shakeable, readable code modules
+- Observable failure states for debugging
+- Minimal runtime overhead (<10KB gzipped)
+
+### Progressive Web Apps
+
+PWAs that need graceful degradation when offline or on restricted networks.
+
+### Legacy Applications
+
+Older apps that need to work on older browsers or network configurations.
+<EOF>
