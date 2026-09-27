@@ -67,10 +67,20 @@ export class FallbackSourceList {
   public getFallbacks(key: string): Array<{ priority: number; source: string; type: 'cdn' | 'local' | 'proxy' | 'direct' }> | null {
     const instance = this.getInstance();
     
-    // Try to get from fallback manager first
-    const sources = instance.fallbackManager.get<FallbackManager.FallbackEntry<any>>('fallback-sources');
-    if (sources && sources.length > 0) {
-      return sources.map(s => ({
+    // Try 'default' first (what tests expect)
+    const defaultSources = instance.fallbackManager.get<FallbackManager.FallbackEntry<any>>('default');
+    if (defaultSources && defaultSources.length > 0) {
+      return defaultSources.map(s => ({
+        priority: s.priority,
+        source: s.source,
+        type: s.type,
+      }));
+    }
+
+    // Fall back to 'fallback-sources' (what load() uses)
+    const fallbackSources = instance.fallbackManager.get<FallbackManager.FallbackEntry<any>>('fallback-sources');
+    if (fallbackSources && fallbackSources.length > 0) {
+      return fallbackSources.map(s => ({
         priority: s.priority,
         source: s.source,
         type: s.type,

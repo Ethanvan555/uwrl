@@ -39,7 +39,7 @@ export class CompatDetector {
    * Detect browser capabilities.
    */
   private detect(): BrowserCapabilities {
-    const sandboxRegex = /sandbox=(["']?)(allow-scripts|allow-same-origin|allow-popups|allow-forms)*/\1/;
+    const sandboxRegex = /allow-scripts|allow-same-origin|allow-popups|allow-forms/;
     const cspRegex = /content-security-policy|csp/i;
 
     // Note: These checks are designed to run in browser environment

@@ -1,4 +1,4 @@
-import { State } from './State';
+import { StateManager as State } from './State';
 
 export interface Config {
   mode: 'gentle' | 'aggressive';
@@ -42,6 +42,13 @@ export class ConfigManager {
     return this.getInstance().get();
   }
 
+  /**
+   * Get mode (static wrapper for singleton access).
+   */
+  public static getMode(): 'gentle' | 'aggressive' {
+    return this.getInstance().config.mode;
+  }
+
   public get(): Config {
     return this.config;
   }
@@ -70,5 +77,12 @@ export class ConfigManager {
   public setMode(mode: 'gentle' | 'aggressive'): void {
     this.config.mode = mode;
     State.set('config', this.config);
+  }
+
+  /**
+   * Set mode (static wrapper for singleton access).
+   */
+  public static setMode(mode: 'gentle' | 'aggressive'): void {
+    this.getInstance().setMode(mode);
   }
 }

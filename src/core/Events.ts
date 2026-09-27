@@ -87,4 +87,21 @@ export class EventManager {
       }
     }
   }
+
+  /**
+   * Emit an event (static wrapper for singleton access).
+   */
+  public static emit<T extends string, V>(key: T, payload: V): void {
+    this.getInstance().emit(key, payload);
+  }
+
+  /**
+   * Subscribe to an event (static wrapper for singleton access).
+   */
+  public static on<T extends string, V>(
+    key: T,
+    handler: (payload: V) => void,
+  ): () => void {
+    return this.getInstance().subscribe(key, handler);
+  }
 }

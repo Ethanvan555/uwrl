@@ -1,21 +1,32 @@
-import { Events } from './Events';
+import { State } from './State';
+import { EventManager as Events } from './Events';
 
-export interface StateRecord {
-  key: string;
-  value: unknown;
+/**
+ * State for UWRL.
+ */
+export interface State {
+  bypassedBoundaries: Map<string, boolean>;
+
+  /**
+   * Record a boundary bypass event.
+   */
+  recordBypass(boundary: string): void;
 }
 
 /**
- * Runtime resilience state tracking for UWRL.
- * Tracks which boundaries were detected, strategies tried, and current status.
+ * State manager for UWRL.
  */
 export class StateManager {
   private static instance: StateManager | null = null;
   private storage: Map<string, unknown>;
-  private summary: Record<string, unknown> = {};
+  private summary: {
+    state?: State;
+    bypassedBoundaries?: Map<string, boolean>;
+  };
 
   private constructor() {
     this.storage = new Map();
+    this.summary = {};
   }
 
   public static getInstance(): StateManager {
@@ -33,63 +44,24 @@ export class StateManager {
   }
 
   /**
-   * Get state object with bypassed boundaries and current state.
+   * Set a value in storage (static wrapper for singleton access).
    */
-  public get(): State {
-    if (!this.summary.state) {
-      this.summary.state = new Map(this.storage);
-    }
-    
-    if (!this.summary.bypassedBoundaries) {
-      const stored = this.storage.get('bypassedBoundaries');
-      this.summary.bypassedBoundaries = stored instanceof Map ? stored : new Map();
-    }
-    
-    return this.summary.state as State;
+  public static set<T>(key: string, value: T): void {
+    this.getInstance().set(key, value);
   }
 
   /**
-   * Set a state value.
+   * Set a value in storage.
    */
   public set<T>(key: string, value: T): void {
     this.storage.set(key, value);
-    Events.emit('state-changed', { key, value });
   }
 
   /**
-   * Check if a state key exists.
+   * Get a value from storage.
    */
-  public has(key: string): boolean {
-    return this.storage.has(key);
-  }
-
-  /**
-   * Delete a state value.
-   */
-  public delete(key: string): boolean {
-    const deleted = this.storage.delete(key);
-    if (deleted) {
-      Events.emit('state-changed', { key, value: undefined });
-    }
-    return deleted;
-  }
-
-  /**
-   * Clear all state.
-   */
-  public clear(): void {
-    const keys = Array.from(this.storage.keys());
-    keys.forEach(key => this.storage.delete(key));
-  }
-
-  /**
-   * Get all state records.
-   */
-  public getAll(): StateRecord[] {
-    return Array.from(this.storage.entries()).map(([key, value]) => ({
-      key,
-      value,
-    }));
+  public get<T>(key: string): T | undefined {
+    return this.storage.get(key);
   }
 
   /**
@@ -99,7 +71,41 @@ export class StateManager {
     const current = this.storage.get('bypassedBoundaries') as Map<string, boolean> || new Map();
     current.set(boundary, true);
     this.storage.set('bypassedBoundaries', current);
-    Events.emit('boundary-bypassed', { boundary });
+    Events.getInstance().emit('boundary-bypassed', { boundary });
+  }
+
+  /**
+   * Record a boundary bypass (static wrapper for singleton access).
+   */
+  public static recordBypass(boundary: string): void {
+    this.getInstance().recordBypass(boundary);
+  }
+
+  /**
+   * Get state object with bypassed boundaries and current state.
+   */
+  public get(): State {
+    const stored = this.storage.get('bypassedBoundaries') as Map<string, boolean> || new Map();
+    
+    // Return structured State interface with bypassedBoundaries property and recordBypass method
+    return {
+      bypassedBoundaries: stored,
+      recordBypass: (boundary: string) => this.recordBypass(boundary),
+    };
+  }
+
+  /**
+   * Get state object (static wrapper for singleton access).
+   */
+  public static get(): State {
+    const instance = this.getInstance();
+    const stored = instance.storage.get('bypassedBoundaries') as Map<string, boolean> || new Map();
+    
+    // Return structured State interface with bypassedBoundaries property and recordBypass method
+    return {
+      bypassedBoundaries: stored,
+      recordBypass: (boundary: string) => instance.recordBypass(boundary),
+    };
   }
 
   /**
@@ -109,11 +115,12 @@ export class StateManager {
     const stored = this.storage.get('bypassedBoundaries');
     return (stored instanceof Map) ? stored : new Map();
   }
-}
 
-/**
- * State object returned by State.get().
- */
-export interface State {
-  bypassedBoundaries: Map<string, boolean>;
+  /**
+   * Get bypassed boundaries set (static wrapper for singleton access).
+   */
+  public static getBypassedBoundaries(): Map<string, boolean> {
+    const instance = this.getInstance();
+    return instance.getBypassedBoundaries();
+  }
 }

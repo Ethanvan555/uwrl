@@ -1,42 +1,23 @@
 import { StateManager } from '../core/State';
 import { Events } from '../core/Events';
 import { Diagnostics } from '../core/Diagnostics';
-import { FallbackManager } from '../resilience/FallbackManager';
-import { FallbackSourceList, AssetResolver } from '../assets';
 
 /**
- * CORS bypass via proxy retries and headers.
+ * CORS bypass via proxy retries and header manipulation.
  */
 
 export interface CORSConfig {
   mode: 'gentle' | 'aggressive';
   proxyUrl?: string;
-  retryCount: number;
-  timeout: number;
+  allowCredentials: boolean;
 }
 
 export interface CORSResult {
   success: boolean;
-  headers?: Record<string, string>;
-  status?: number;
-  error?: string;
-}
-
-export interface CORSAnalysisResult {
-  restricted: boolean;
+  status: number;
+  headers: Record<string, string>;
+  source?: 'original' | 'proxy';
   reason?: string;
-  headers?: Record<string, string>;
-}
-
-export interface SandboxAnalysisResult {
-  hasScripts: boolean;
-  hasSameOrigin: boolean;
-  hasTreatAsPopup: boolean;
-  hasAllowForms: boolean;
-  hasAllowModalsDialogs: boolean;
-  hasAllowPopups: boolean;
-  hasAllowStorage: boolean;
-  hasAllowTopNavigation: boolean;
 }
 
 /**
@@ -46,61 +27,88 @@ export class CORSBypassManager {
   private static instance: CORSBypassManager | null = null;
   private config: CORSConfig;
 
-  private constructor() {
+  private constructor(config?: Partial<CORSConfig>) {
     this.config = {
       mode: 'gentle',
       proxyUrl: undefined,
-      retryCount: 3,
-      timeout: 5000,
+      allowCredentials: true,
+      ...config,
     };
   }
 
-  public static getInstance(): CORSBypassManager {
+  public static getInstance(config?: Partial<CORSConfig>): CORSBypassManager {
     if (!CORSBypassManager.instance) {
-      CORSBypassManager.instance = new CORSBypassManager();
+      CORSBypassManager.instance = new CORSBypassManager(config);
     }
     return CORSBypassManager.instance;
   }
 
   /**
-   * Reset the manager to initial state.
+   * Check if a URL is accessible (with CORS retry).
    */
-  public static reset(): void {
-    CORSBypassManager.instance = null;
-  }
-
-  /**
-   * Initialize the CORS bypass module.
-   */
-  public static initialize(): CORSBypassManager {
-    return CORSBypassManager.getInstance();
-  }
-
-  /**
-   * Get current config.
-   */
-  public getConfig(): CORSConfig {
-    return this.config;
-  }
-
-  /**
-   * Analyze CORS headers from a response.
-   */
-  public analyzeHeaders(headers: Headers | Record<string, string>): CORSAnalysisResult {
-    const headerMap = new Map(Object.entries(headers).map(([k, v]) => [k.toLowerCase(), v]));
+  public async checkAccessibility(url: string): Promise<CORSResult> {
+    Diagnostics.getInstance().log('cors', 'info', `Checking accessibility for ${url}`, { url });
     
-    // Check for CORS restrictions
-    const originHeader = headerMap.get('access-control-allow-origin');
-    const restricted = originHeader !== 'null' && originHeader !== '*' && originHeader !== undefined;
-    
-    if (restricted) {
-      Diagnostics.getInstance().log('cors', 'info', 'CORS headers detected', { origin: originHeader });
+    try {
+      const response = await fetch(url, {
+        mode: 'cors',
+        credentials: this.config.allowCredentials ? 'include' : 'same-origin',
+        headers: {
+          'Access-Control-Request-Method': 'GET',
+          'Access-Control-Request-Headers': '*',
+        },
+      });
+
+      if (response.ok) {
+        return {
+          success: true,
+          status: response.status,
+          headers: { ...response.headers },
+          source: 'original',
+        };
+      }
+
+      // Check for CORS error
+      const corsError = response.headers.get('X-Correlation-ID');
+      if (corsError) {
+        Diagnostics.getInstance().log('cors', 'warn', `CORS error: ${corsError}`, { url });
+      } else {
+        Diagnostics.getInstance().log('cors', 'warn', `HTTP ${response.status}`, { url, status: response.status });
+      }
+    } catch (error) {
+      Diagnostics.getInstance().log('cors', 'warn', `Fetch failed for ${url}`, { url, error });
     }
 
+    // If proxy URL is configured, try that as fallback
+    if (this.config.proxyUrl) {
+      try {
+        const proxiedResponse = await fetch(this.config.proxyUrl, {
+          method: 'GET',
+          headers: {
+            'X-Original-URL': url,
+            'X-Original-Method': 'GET',
+          },
+        });
+
+        if (proxiedResponse.ok) {
+          return {
+            success: true,
+            status: proxiedResponse.status,
+            headers: { ...proxiedResponse.headers },
+            source: 'proxy',
+          };
+        }
+      } catch (proxyError) {
+        Diagnostics.getInstance().log('cors', 'warn', `Proxy fallback failed for ${url}`, { url, error: proxyError });
+      }
+    }
+
+    Diagnostics.getInstance().log('cors', 'warn', `All CORS retry attempts failed for ${url}`, { url });
     return {
-      restricted,
-      reason: restricted ? `Restricted by origin: ${originHeader}` : 'Permissive CORS',
-      headers: Object.fromEntries(headerMap),
+      success: false,
+      status: 0,
+      headers: {},
+      reason: 'All retries exhausted',
     };
   }
 
@@ -180,12 +188,22 @@ export class CORSBypassManager {
 
   /**
    * Analyze iframe sandbox restrictions.
+   * Returns an object with boolean flags for each restriction type.
    */
-  public analyzeSandbox(sandboxAttr: string): SandboxAnalysisResult {
-    const flags = new Set(sandboxAttr.toLowerCase().split(/\s+/).map(f => f.replace(/-/, '')));
+  public analyzeSandbox(sandboxAttr: string): {
+    hasScripts: boolean;
+    hasSameOrigin: boolean;
+    hasTreatAsPopup: boolean;
+    hasAllowForms: boolean;
+    hasAllowModalsDialogs: boolean;
+    hasAllowPopups: boolean;
+    hasAllowStorage: boolean;
+    hasAllowTopNavigation: boolean;
+  } {
+    const flags = new Set(sandboxAttr.toLowerCase().split(/\s+/));
     
     return {
-      hasScripts: flags.has('scripts'),
+      hasScripts: flags.has('allow-scripts'),
       hasSameOrigin: flags.has('same-origin'),
       hasTreatAsPopup: flags.has('treat-as-popup'),
       hasAllowForms: flags.has('allow-forms'),
@@ -200,7 +218,7 @@ export class CORSBypassManager {
    * Get fallback asset sources.
    */
   public getFallbackSources(): Array<{ priority: number; source: string; type: 'cdn' | 'local' | 'proxy' | 'direct' }> {
-    const fallbackManager = FallbackManager.getInstance();
+    // Use instance method instead of static method
     const fallbackSourceList = FallbackSourceList.getInstance();
     
     // Get fallback sources from the fallback source list

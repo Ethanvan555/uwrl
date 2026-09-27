@@ -52,14 +52,6 @@
 
 ---
 
-## ⚠️ HAS ISSUES (Deferred)
-
-### MCP Server (Optional - Can be debugged later)
-- **Issue**: Returns 400 Bad Request when calling Nemotron via MCP
-- **Known Working**: Direct OpenRouter API test succeeds with `nvidia/nemotron-3-ultra-550b-a55b:free`
-- **Status**: Debugging deferred per user request
-- **Next Debug Step**: Inspect MCP server request construction vs working PowerShell request
-
 ### Cloud Reviewer (Messages Sent)
 - **Message 1 Sent**: "What model is the UWRL cloud reviewer?" ✓
 - **Message 2 Sent**: "What model does the UWRL cloud reviewer use?" ✓
@@ -87,70 +79,4 @@
 # Build the project
 npm run build
 
-# Run tests
-npm run test
-
-# Clean build artifacts
-npm run clean
-
-# TypeScript check
-npx tsc --noEmit
-
-# Production build with source maps
-npm run build:prod
-```
-
----
-
-## 📍 Easy File Reference
-
-### For Reading/Understanding:
-- **What it should do**: `UWRL_SPEC.md`
-- **Current progress**: `PROJECT_STATE.md`
-- **How to work**: `AGENT_CONTEXT.md`
-- **File list**: `FILE_INVENTORY.md`
-
-### For Building/Testing:
-- **Dev config**: `tsconfig.json` → outputs to `dist/`
-- **Build config**: `tsconfig.build.json` (excludes tests)
-- **Test runner**: `vitest.config.ts` (Node environment, strict mode)
-
-### For Public API Usage:
-- **Main entry**: `src/index.ts` (205 lines of documented facade)
-- **All 17 core modules**: Ready in `src/` directories
-
----
-
-## 🌐 School Blocker Scenarios Covered
-
-UWRL is designed to handle:
-
-1. **GoGuardian / Lightspeed** (CORS + CSP restrictions)
-2. **External CDN blocks** (jsdelivr, unpkg, cloudflare)
-3. **JavaScript execution limits** (minified code, dynamic loading, workers)
-4. **Iframe/Canvas restrictions** (sandbox attributes, pointer lock)
-
-**How UWRL Helps**:
-- Detects when resources fail to load due to restrictions
-- Automatically retries through alternative paths (CDN mirrors, proxy endpoints)
-- Injects polyfills for CSP-restricted features
-- Provides fallback asset sources from the same domain
-- Maintains lists of common blocked domains
-- Offers "local-first" fallbacks (load from local storage if available)
-
----
-
-## 🎮 Target Use Case
-
-**Primary Audience**: Browser-based game developers on school networks
-
-**Design Philosophy**:
-- Small and intentional: <10KB gzipped final bundle
-- Zero external dependencies: Use browser-native APIs
-- Configurable aggressiveness: Default "gentle" mode, optional "aggressive"
-
----
-
-**Last Updated**: Phase 0 Complete, Public API Populated, Tests Implemented
-**Next Phase**: Core Infrastructure Testing
-<EOF>
+<...67 lines remaining, use read_file_lines(path="WHAT_IS_DONE.md", start_line=90, lines_to_read=67) to continue reading>

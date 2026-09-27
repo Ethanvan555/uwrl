@@ -65,6 +65,18 @@ export class DiagnosticsManager {
   }
 
   /**
+   * Record a diagnostic entry (static wrapper for singleton access).
+   */
+  public static log(
+    category: string,
+    level: 'info' | 'warn' | 'error',
+    message: string,
+    context?: Record<string, unknown>,
+  ): DiagnosticEntry {
+    return this.getInstance().log(category, level, message, context);
+  }
+
+  /**
    * Get all entries.
    */
   public getEntries(): DiagnosticEntry[] {
@@ -83,6 +95,14 @@ export class DiagnosticsManager {
    */
   public getMessages(): DiagnosticEntry[] {
     return this.getEntries();
+  }
+
+  /**
+   * Get messages (static wrapper for singleton access).
+   */
+  public static getMessages(): DiagnosticEntry[] {
+    const instance = this.getInstance();
+    return instance.getMessages();
   }
 
   /**

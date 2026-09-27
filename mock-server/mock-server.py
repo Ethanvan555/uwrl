@@ -41,9 +41,7 @@ class MockHandler(SimpleHTTPRequestHandler):
     
     # Map of endpoints to their responses
     ENDPOINTS = {
-        '/source1.mjs': (200, 'application/javascript', b'''/**
- * Source 1 - Primary Test Source (Working)
- */
+        '/source1.mjs': (200, 'application/javascript', b'''\n/**\n * Source 1 - Primary Test Source (Working)\n */
 
 console.log('[Source1] Module loaded successfully');
 
@@ -63,9 +61,7 @@ export const assets = {
 console.log('[Source1] Assets loaded');
 '''),
         
-        '/source2.mjs': (200, 'application/javascript', b'''/**
- * Source 2 - Secondary Test Source (Working)
- */
+        '/source2.mjs': (200, 'application/javascript', b'''\n/**\n * Source 2 - Secondary Test Source (Working)\n */
 
 console.log('[Source2] Module loaded successfully');
 
@@ -85,9 +81,7 @@ export const assets = {
 console.log('[Source2] Assets loaded');
 '''),
         
-        '/fallback.mjs': (200, 'application/javascript', b'''/**
- * Fallback - Ultimate Test Source (Working)
- */
+        '/fallback.mjs': (200, 'application/javascript', b'''\n/**\n * Fallback - Ultimate Test Source (Working)\n */
 
 console.log('[Fallback] Module loaded successfully');
 
@@ -112,22 +106,9 @@ export const assets = {
 console.log('[Fallback] Local assets loaded');
 '''),
         
-        '/blocked.mjs': (403, 'application/json', b'''{
-  "code": 403,
-  "status": "Forbidden",
-  "domain": "cdn.blocked-school.com",
-  "headers": {
-    "Access-Control-Allow-Origin": "cdn.blocked-school.com",
-    "Content-Type": "application/json"
-  },
-  "message": "CDN blocked by school filter",
-  "retryStrategy": "try_secondary_source",
-  "fallbackPaths": ["/scripts/source2.mjs", "/scripts/fallback.mjs"]
-}'''),
+        '/blocked.mjs': (403, 'application/json', b'''\n{\n  "code": 403,\n  "status": "Forbidden",\n  "domain": "cdn.blocked-school.com",\n  "headers": {\n    "Access-Control-Allow-Origin": "cdn.blocked-school.com",\n    "Content-Type": "application/json"\n  },\n  "message": "CDN blocked by school filter",\n  "retryStrategy": "try_secondary_source",\n  "fallbackPaths": ["/scripts/source2.mjs", "/scripts/fallback.mjs"]\n}\n'''),
         
-        '/mocked-api.mjs': (200, 'application/javascript', b'''/**
- * Mocked API Endpoint
- */
+        '/mocked-api.mjs': (200, 'application/javascript', b'''\n/**\n * Mocked API Endpoint\n */
 
 const API_DELAY = 50;
 
@@ -168,9 +149,7 @@ export const config = {
 export default handler;
 '''),
         
-        '/worker.mjs': (200, 'application/javascript', b'''/**
- * Web Worker Test Module
- */
+        '/worker.mjs': (200, 'application/javascript', b'''\n/**\n * Web Worker Test Module\n */
 
 // Worker message handling
 let messageCount = 0;
@@ -215,9 +194,7 @@ self.onmessage = function(e) {
 };
 '''),
         
-        '/embed.html': (200, 'text/html; charset=utf-8', b'''/**
- * Embed Content for Iframe Testing
- */
+        '/embed.html': (200, 'text/html; charset=utf-8', b'''\n/**\n * Embed Content for Iframe Testing\n */
 
 // Sandbox-friendly configuration
 const SANDBOX_CONFIG = {

@@ -9,6 +9,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "build": "tsc -p tsconfig.build.json",
+    "build:bundle": "tsc -p tsconfig.build.json && node -e \"const fs=require('fs'); const path=require('path'); const distIndex=path.join(__dirname,'dist/index.js'); const distDTS=path.join(__dirname,'dist/index.d.ts'); const bundleJS='// UWRL Bundle\\n' + fs.readFileSync(distIndex,'utf8').replace(/export/g,'import * as uwrl from\"./index\"; export default uwrl;'); const bundleDTS='import * as uwrl from\"./index\";\\nexport default uwrl;' + fs.readFileSync(distDTS,'utf8').replace(/export.*?;/g,';'); fs.writeFileSync(path.join(__dirname,'dist/bundle.js'),bundleJS); fs.writeFileSync(path.join(__dirname,'dist/bundle.d.ts'),bundleDTS); console.log('Bundle created: dist/bundle.js');\"",
     "clean": "node -e \"const fs = require('fs'); const path = require('path'); const dist = path.join(__dirname, 'dist'); if (fs.existsSync(dist)) { fs.rmSync(dist, { recursive: true }); }\"",
     "prepublish": "npm run build"
   },
@@ -28,15 +29,13 @@
     "lightspeed"
   ],
   "author": "",
-  "license": "ISC",
-  "type": "commonjs",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Ethanvan555/uwrl/issues"
   },
   "homepage": "https://github.com/Ethanvan555/uwrl#readme",
   "devDependencies": {
-    "@types/node": "^26.6.3",
-    "typescript": "^7.0.2",
-    "vitest": "^5.0.2"
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
   }
 }
