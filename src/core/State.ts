@@ -33,18 +33,27 @@ export class StateManager {
   }
 
   /**
+   * Get state object with bypassed boundaries and current state.
+   */
+  public get(): State {
+    if (!this.summary.state) {
+      this.summary.state = new Map(this.storage);
+    }
+    
+    if (!this.summary.bypassedBoundaries) {
+      const stored = this.storage.get('bypassedBoundaries');
+      this.summary.bypassedBoundaries = stored instanceof Map ? stored : new Map();
+    }
+    
+    return this.summary.state as State;
+  }
+
+  /**
    * Set a state value.
    */
   public set<T>(key: string, value: T): void {
     this.storage.set(key, value);
     Events.emit('state-changed', { key, value });
-  }
-
-  /**
-   * Get a state value.
-   */
-  public get<T>(key: string): T | undefined {
-    return this.storage.get(key) as T;
   }
 
   /**
@@ -84,16 +93,6 @@ export class StateManager {
   }
 
   /**
-   * Get summary of bypassed boundaries and current state.
-   */
-  public getSummary(): Record<string, unknown> {
-    if (!this.summary.bypassedBoundaries) {
-      this.summary.bypassedBoundaries = new Map(this.storage.get('bypassedBoundaries') as Map<string, boolean> || new Map());
-    }
-    return { ...this.summary };
-  }
-
-  /**
    * Record a boundary bypass.
    */
   public recordBypass(boundary: string): void {
@@ -102,4 +101,19 @@ export class StateManager {
     this.storage.set('bypassedBoundaries', current);
     Events.emit('boundary-bypassed', { boundary });
   }
+
+  /**
+   * Get bypassed boundaries set.
+   */
+  public getBypassedBoundaries(): Map<string, boolean> {
+    const stored = this.storage.get('bypassedBoundaries');
+    return (stored instanceof Map) ? stored : new Map();
+  }
+}
+
+/**
+ * State object returned by State.get().
+ */
+export interface State {
+  bypassedBoundaries: Map<string, boolean>;
 }

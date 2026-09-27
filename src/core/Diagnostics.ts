@@ -46,7 +46,7 @@ export class DiagnosticsManager {
     level: 'info' | 'warn' | 'error',
     message: string,
     context?: Record<string, unknown>,
-  ): void {
+  ): DiagnosticEntry {
     const entry: DiagnosticEntry = {
       timestamp: Date.now(),
       category,
@@ -60,6 +60,8 @@ export class DiagnosticsManager {
     if (this.entries.length > this.maxEntries) {
       this.entries.shift();
     }
+    
+    return entry;
   }
 
   /**

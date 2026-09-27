@@ -44,6 +44,20 @@ export class TLSBypassManager {
   }
 
   /**
+   * Reset the manager to initial state.
+   */
+  public static reset(): void {
+    TLSBypassManager.instance = null;
+  }
+
+  /**
+   * Initialize the TLS bypass module.
+   */
+  public static initialize(): TLSBypassManager {
+    return TLSBypassManager.getInstance();
+  }
+
+  /**
    * Get current config.
    */
   public getConfig(): TLSConfig {

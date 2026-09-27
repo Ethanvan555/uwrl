@@ -18,6 +18,7 @@ export interface EventSubscription<T extends string, V> {
 export class EventManager {
   private static instance: EventManager | null = null;
   private subscriptions: Map<string, Array<EventSubscription<any, any>>>;
+  public subs: Array<EventSubscription<any, any>> = [];
 
   private constructor() {
     this.subscriptions = new Map();
@@ -38,7 +39,7 @@ export class EventManager {
   }
 
   /**
-   * Subscribe to an event.
+   * Subscribe to an event (alias for on).
    */
   public subscribe<T extends string, V>(
     key: T,
@@ -62,6 +63,16 @@ export class EventManager {
   }
 
   /**
+   * Subscribe to an event.
+   */
+  public on<T extends string, V>(
+    key: T,
+    handler: (payload: V) => void,
+  ): () => void {
+    return this.subscribe(key, handler);
+  }
+
+  /**
    * Emit an event.
    */
   public emit<T extends string, V>(key: T, payload: V): void {
@@ -75,12 +86,5 @@ export class EventManager {
         }
       }
     }
-  }
-
-  /**
-   * Clear all subscriptions.
-   */
-  public clear(): void {
-    this.subscriptions.clear();
   }
 }

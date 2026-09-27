@@ -11,10 +11,10 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { Config, State, Events, Diagnostics } from '../../core';
-import { CORSBypass, CSPBypass, TLSBypass, AuthBypass } from '../../boundary';
-import { AssetResolver, FallbackSourceList } from '../../assets';
-import { BlacklistManager, WhitelistManager } from '../../domain';
+import { ConfigManager as Config, StateManager as State, EventManager as Events, DiagnosticsManager as Diagnostics } from '../core/index';
+import { CORSBypass, CSPBypass, TLSBypass, AuthBypass } from '../boundary';
+import { AssetResolver, FallbackSourceList } from '../assets';
+import { BlacklistManager, WhitelistManager } from '../domain';
 
 describe('UWRL Integration Tests', () => {
   beforeEach(() => {

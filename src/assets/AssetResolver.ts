@@ -51,6 +51,39 @@ export class AssetResolver {
   }
 
   /**
+   * Create a new asset resolver instance with configuration.
+   */
+  public static create(options: {
+    sources: Array<{ priority: number; source: string; type: 'cdn' | 'local' | 'proxy' | 'direct' }>;
+    mode: 'gentle' | 'aggressive';
+  }): AssetResolver {
+    const instance = new AssetResolver();
+    
+    // Store configuration in state for persistence
+    StateManager.getInstance().set('assetResolver', {
+      sources: options.sources,
+      mode: options.mode,
+    });
+    
+    // Update internal config based on mode
+    instance.config = {
+      mode: options.mode,
+      primaryCDN: 'https://cdn.jsdelivr.net',
+      fallbackCDNs: [
+        'https://cdn.jsdelivr.net',
+        'https://unpkg.com',
+        'https://cdn.cloudflare.com',
+        'https://fastly.jsdelivr.net',
+      ],
+    };
+    
+    // Register with fallback manager
+    instance.fallbackManager = FallbackManager.getInstance();
+    
+    return instance;
+  }
+
+  /**
    * Get current config.
    */
   public getConfig(): AssetConfig {

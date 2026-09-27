@@ -9,8 +9,8 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { State, Events } from '../../core/State';
-import { CORSBypass } from '../../boundary/CORSBypass';
+import { StateManager as State, EventManager as Events } from '../../core/index';
+import { CORSBypassManager as CORSBypass } from '../../boundary/CORSBypass';
 
 describe('CORS Bypass Tests', () => {
   beforeEach(() => {

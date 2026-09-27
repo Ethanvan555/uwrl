@@ -44,6 +44,20 @@ export class AuthBypassManager {
   }
 
   /**
+   * Reset the manager to initial state.
+   */
+  public static reset(): void {
+    AuthBypassManager.instance = null;
+  }
+
+  /**
+   * Initialize the Auth bypass module.
+   */
+  public static initialize(): AuthBypassManager {
+    return AuthBypassManager.getInstance();
+  }
+
+  /**
    * Get current config.
    */
   public getConfig(): AuthConfig {

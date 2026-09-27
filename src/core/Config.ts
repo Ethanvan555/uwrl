@@ -35,6 +35,13 @@ export class ConfigManager {
     ConfigManager.instance = null;
   }
 
+  /**
+   * Load default configuration.
+   */
+  public static load(): Config {
+    return this.getInstance().get();
+  }
+
   public get(): Config {
     return this.config;
   }
@@ -54,6 +61,14 @@ export class ConfigManager {
 
   public setDebug(enabled: boolean): void {
     this.config.debug = enabled;
+    State.set('config', this.config);
+  }
+
+  /**
+   * Set mode (gentle or aggressive).
+   */
+  public setMode(mode: 'gentle' | 'aggressive'): void {
+    this.config.mode = mode;
     State.set('config', this.config);
   }
 }
