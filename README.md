@@ -3,7 +3,7 @@ Universal Web Resilience Layer — a production-quality TypeScript library for b
 
 ## When UWRL Won't Be Effective
 
-Despite its robust design, UWRL may not provide full resilience in these scenarios:
+**Despite its robust design, UWRL may not provide full resilience in these scenarios:**
 
 - **Completely isolated network environments** (air-gapped systems, dedicated hardware with no external connectivity)
 - **Hard-coded browser restrictions** that mutate the document object model after initial load
@@ -21,33 +21,44 @@ Choose the method that best fits your project type:
 
 ### Method 1: Direct Import (for simple sites / static HTML)
 
+**Where to move the `src/` folder:**
+
 If you have a simple HTML/JS site without a bundler:
 
-1. Copy the `src/` folder into your project's source directory
-2. In your HTML file, add a script tag pointing to your built bundle:
-   ```html
-   <script src="uwrl/bundle.js"></script>
+1. Copy the `src/` folder **into your project's source directory** (e.g., `my-project/src/`)
+2. Build the library in that location:
+   ```bash
+   cd my-project/src/uwrl
+   npm run build
    ```
-3. Use the API in your scripts:
+3. In your HTML file, add a script tag pointing to your built bundle:
+   ```html
+   <script src="src/uwrl/dist/bundle.js"></script>
+   ```
+4. Use the API in your scripts:
    ```typescript
-   import * as uwrl from 'uwrl/src/index.ts';
+   import * as uwrl from './src/uwrl/index.ts';
    // or after building
-   import * as uwrl from './uwrl/dist/index.js';
+   import * as uwrl from './src/uwrl/dist/index.js';
    ```
 
 ### Method 2: npm Package (for Node.js / Vite / Webpack projects)
 
+**Where to move the `src/` folder:**
+
 If you plan to build and distribute UWRL as a package:
 
-1. Build the library:
+1. Build the library in your workspace:
    ```bash
+   cd uwrl
    npm run build
    ```
 2. Install it locally in your project:
    ```bash
+   cd my-project
    npm link uwrl
    # or
-   npm install ./path/to/uwrl
+   npm install ./uwrl
    ```
 3. Import in your code:
    ```typescript
@@ -56,7 +67,7 @@ If you plan to build and distribute UWRL as a package:
 
 ### Method 3: CDN (for quick prototyping / testing)
 
-1. Build and host the bundle on a CDN or static server
+1. Build the library and host it on a CDN or static server
 2. Reference it directly in your HTML:
    ```html
    <script src="https://cdn.example.com/uwrl/bundle.js"></script>
@@ -64,9 +75,15 @@ If you plan to build and distribute UWRL as a package:
 
 ### Method 4: Framework Integration (React, Vue, Angular, etc.)
 
+**Where to move the `src/` folder:**
+
 For framework-based projects:
 
-1. Add UWRL as a dependency in your `package.json`
+1. Add UWRL as a dependency in your `package.json`:
+   ```bash
+   cd my-project
+   npm install uwrl
+   ```
 2. Import it in your entry point or main app file:
    ```typescript
    // In your entry.tsx or main.ts
@@ -128,3 +145,4 @@ The library will then be bundled with your existing build process, and your appl
 ## License
 
 MIT
+<EOF>
